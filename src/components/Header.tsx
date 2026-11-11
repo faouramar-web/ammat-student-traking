@@ -310,14 +310,14 @@ export const Header: React.FC = () => {
         {/* Main Navigation Tabs: Visible ONLY to authenticated staff members */}
         {session ? (
           <div className="bg-slate-950/70 border-t border-slate-800 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-7xl mx-auto flex items-center gap-1 overflow-x-auto py-1.5 scrollbar-none">
+            <div className="max-w-7xl mx-auto flex flex-wrap items-center gap-1.5 py-2">
               {navItems.map((item) => {
                 const isActive = currentRole === item.id;
                 return (
                   <button
                     key={item.id}
                     onClick={() => handleNavClick(item)}
-                    className={`relative flex items-center px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all whitespace-nowrap ${
+                    className={`relative flex items-center px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
                       isActive
                         ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-md shadow-blue-500/20'
                         : 'text-slate-300 hover:text-white hover:bg-slate-800/70'

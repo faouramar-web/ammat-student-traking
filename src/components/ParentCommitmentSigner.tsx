@@ -8,7 +8,6 @@ import {
   CheckCircle2,
   RotateCcw,
   Printer,
-  Download,
   AlertCircle,
   FileText,
   User,
@@ -21,7 +20,6 @@ import {
   X,
   Award,
   Globe,
-  Eye,
 } from 'lucide-react';
 
 interface ParentCommitmentSignerProps {
@@ -53,9 +51,6 @@ export const ParentCommitmentSigner: React.FC<ParentCommitmentSignerProps> = ({
   const [studentSignature, setStudentSignature] = useState<string>('');
   const [notes, setNotes] = useState<string>('');
   const [agreed, setAgreed] = useState<boolean>(true);
-
-  // PDF Viewer toggle
-  const [showEmbeddedPdf, setShowEmbeddedPdf] = useState<boolean>(false);
 
   // Auto today's date
   const todayFormatted = new Intl.DateTimeFormat('he-IL', {
@@ -100,7 +95,7 @@ export const ParentCommitmentSigner: React.FC<ParentCommitmentSignerProps> = ({
     ctx.lineWidth = 2.5;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
-  }, [submitSuccess, selectedStudentId, showEmbeddedPdf]);
+  }, [submitSuccess, selectedStudentId]);
 
   const getCoordinates = (
     e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>
@@ -508,43 +503,24 @@ export const ParentCommitmentSigner: React.FC<ParentCommitmentSignerProps> = ({
                 نص وثيقة التعهّد والالتزام الكاملة (كما في استمارة المدرسة الرسمية)
               </h2>
 
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setShowEmbeddedPdf(!showEmbeddedPdf)}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-50 hover:bg-cyan-100 text-cyan-800 text-xs font-bold border border-cyan-300 shadow-sm transition-all cursor-pointer"
-                >
-                  <Eye className="w-3.5 h-3.5 text-cyan-600" />
-                  <span>{showEmbeddedPdf ? 'إخفاء معاينة ملف الـ PDF' : 'عرض ملف الـ PDF الأصلي (3 صفحات)'}</span>
-                </button>
-
+              <div className="flex items-center">
                 <a
-                  href="/assets/amat_commitment_form.pdf"
+                  href={`${import.meta.env.BASE_URL}assets/amat_commitment_form.pdf`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold border border-slate-300 shadow-sm transition-all"
+                  className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-700 active:scale-95 text-white text-xs sm:text-sm font-bold shadow-sm transition-all cursor-pointer"
+                  title={docLang === 'ar' ? 'فتح وثيقة الـ PDF الأصلية في نافذة منفصلة' : 'פתיחת קובץ ה-PDF המקורי בחלון נפרד'}
                 >
-                  <Download className="w-3.5 h-3.5 text-slate-600" />
-                  <span>تحميل ملف PDF</span>
-                  <ExternalLink className="w-3 h-3 text-slate-400" />
+                  <FileText className="w-4 h-4 text-cyan-100" />
+                  <span>
+                    {docLang === 'ar'
+                      ? 'عرض ملف الـ PDF الأصلي (3 صفحات) - نافذة منفصلة'
+                      : 'פתיחת קובץ ה-PDF המקורי (3 עמודים) בחלון נפרד'}
+                  </span>
+                  <ExternalLink className="w-3.5 h-3.5 text-cyan-200" />
                 </a>
               </div>
             </div>
-
-            {/* EMBEDDED ORIGINAL PDF VIEWER (IF TOGGLED) */}
-            {showEmbeddedPdf && (
-              <div className="rounded-2xl border-2 border-cyan-500 overflow-hidden bg-slate-100 shadow-inner">
-                <div className="p-2.5 bg-cyan-900 text-white text-xs font-bold flex items-center justify-between">
-                  <span>📄 معاينة وثيقة التعهّد الأصلية بصيغة PDF (المرفوعة للمدرسة)</span>
-                  <span className="text-[11px] text-cyan-200">3 صفحات</span>
-                </div>
-                <iframe
-                  src="/assets/amat_commitment_form.pdf"
-                  title="استمارة تعهّد والتزام الطالب ووليّ الأمر"
-                  className="w-full h-96 border-none"
-                />
-              </div>
-            )}
 
             {/* VERBATIM TEXT ACCORDING TO UPLOADED PDF */}
             <div className="p-5 sm:p-6 bg-white rounded-2xl border border-slate-200 text-xs sm:text-sm text-slate-800 leading-relaxed space-y-4 max-h-[460px] overflow-y-auto shadow-inner">

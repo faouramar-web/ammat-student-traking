@@ -213,7 +213,7 @@ export const HomeroomDashboard: React.FC = () => {
                   בחר כיתת מחנכת לצפייה ישירה:
                 </span>
               </div>
-              <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 pb-1">
                 <button
                   onClick={() => setSelectedHomeroomClass('all')}
                   className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${

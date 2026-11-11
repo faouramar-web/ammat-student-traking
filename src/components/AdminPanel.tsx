@@ -37,6 +37,8 @@ import {
   RotateCcw,
   CheckCheck,
   FileSignature,
+  ChevronRight,
+  ChevronLeft,
 } from 'lucide-react';
 
 export const AVAILABLE_CLASSES = [
@@ -70,6 +72,9 @@ export const AdminPanel: React.FC = () => {
   const [activeTab, setActiveTab] = useState<
     'teachers' | 'periods' | 'reports_lists' | 'pedagogical' | 'behavior' | 'database' | 'codes' | 'student_codes' | 'commitments' | 'resets'
   >('teachers');
+
+  // Mobile navigation mode: 2 rows with arrows or full grid
+  const [adminTabsViewMode, setAdminTabsViewMode] = useState<'two_rows' | 'grid'>('two_rows');
 
   // Student codes management states
   const [studentCodeClassFilter, setStudentCodeClassFilter] = useState<string>('all');
@@ -488,127 +493,184 @@ export const AdminPanel: React.FC = () => {
           </div>
         </div>
 
-        {/* Tab Navigation inside Admin Panel */}
-        <div className="mt-6 pt-4 border-t border-white/10 flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
-          <button
-            onClick={() => setActiveTab('teachers')}
-            className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
-              activeTab === 'teachers'
-                ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20'
-                : 'bg-slate-800/80 text-slate-300 hover:text-white hover:bg-slate-700'
-            }`}
-          >
-            <Users className="w-4 h-4" />
-            <span>עריכת מורים ותפקידים ({teachers.length})</span>
-          </button>
+        {/* Tab Navigation inside Admin Panel: 2 rows with Right/Left arrows on mobile */}
+        <div className="mt-6 pt-4 border-t border-white/10 space-y-2.5">
+          {/* Mobile Navigation Header with Right/Left Arrow Controls */}
+          <div className="flex items-center justify-between sm:hidden px-1 text-xs">
+            <span className="text-cyan-300 font-bold flex items-center gap-1">
+              <span>תפריט כפתורים ({adminTabsViewMode === 'two_rows' ? '2 שורות' : 'רשת מלאה'}):</span>
+            </span>
 
-          <button
-            onClick={() => setActiveTab('periods')}
-            className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
-              activeTab === 'periods'
-                ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20'
-                : 'bg-slate-800/80 text-slate-300 hover:text-white hover:bg-slate-700'
-            }`}
-          >
-            <Clock className="w-4 h-4" />
-            <span>שעות שיעורים בבית הספר ({periods.length})</span>
-          </button>
+            <div className="flex items-center gap-1.5">
+              {/* Arrow Right button (גלול ימינה) */}
+              <button
+                type="button"
+                onClick={() => {
+                  const el = document.getElementById('admin-tabs-scroll-container');
+                  if (el) el.scrollBy({ left: 160, behavior: 'smooth' });
+                }}
+                className="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 active:bg-cyan-600 text-cyan-200 border border-slate-700 font-bold text-[11px] flex items-center gap-1 transition-all cursor-pointer shadow"
+                title="גלול ימינה"
+              >
+                <span>ימינה</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
 
-          <button
-            onClick={() => setActiveTab('reports_lists')}
-            className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
-              activeTab === 'reports_lists'
-                ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20'
-                : 'bg-slate-800/80 text-slate-300 hover:text-white hover:bg-slate-700'
-            }`}
-          >
-            <FileText className="w-4 h-4" />
-            <span>דוחות רשימות עמ"ט להנהלה (ז', ח', ט')</span>
-          </button>
+              {/* Arrow Left button (גלול שמאלה) */}
+              <button
+                type="button"
+                onClick={() => {
+                  const el = document.getElementById('admin-tabs-scroll-container');
+                  if (el) el.scrollBy({ left: -160, behavior: 'smooth' });
+                }}
+                className="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 active:bg-cyan-600 text-cyan-200 border border-slate-700 font-bold text-[11px] flex items-center gap-1 transition-all cursor-pointer shadow"
+                title="גלול שמאלה"
+              >
+                <ChevronLeft className="w-3.5 h-3.5" />
+                <span>שמאלה</span>
+              </button>
 
-          <button
-            onClick={() => setActiveTab('codes')}
-            className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
-              activeTab === 'codes'
-                ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20'
-                : 'bg-slate-800/80 text-slate-300 hover:text-white hover:bg-slate-700'
-            }`}
-          >
-            <KeyRound className="w-4 h-4" />
-            <span>קודי צוות והרשאות</span>
-          </button>
+              {/* Toggle 2 rows vs full grid */}
+              <button
+                type="button"
+                onClick={() => setAdminTabsViewMode(adminTabsViewMode === 'two_rows' ? 'grid' : 'two_rows')}
+                className="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 font-bold text-[11px] transition-all cursor-pointer shadow"
+                title="החלף מצב תצוגה בסמארטפון"
+              >
+                {adminTabsViewMode === 'two_rows' ? 'הצג הכל ברשת' : 'הצג 2 שורות'}
+              </button>
+            </div>
+          </div>
 
-          <button
-            onClick={() => setActiveTab('student_codes')}
-            className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
-              activeTab === 'student_codes'
-                ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20'
-                : 'bg-slate-800/80 text-cyan-300 hover:text-white hover:bg-slate-700 border border-cyan-500/30'
-            }`}
+          {/* 2-Rows / Grid container */}
+          <div
+            id="admin-tabs-scroll-container"
+            className={`${
+              adminTabsViewMode === 'two_rows'
+                ? 'grid grid-rows-2 grid-flow-col auto-cols-[180px] overflow-x-auto pb-2 scrollbar-thin scroll-smooth sm:grid-rows-none sm:grid-flow-row sm:flex sm:flex-wrap'
+                : 'grid grid-cols-2 sm:flex sm:flex-wrap pb-2'
+            } items-center gap-2`}
           >
-            <UserCheck className="w-4 h-4 text-cyan-400" />
-            <span>קודי תלמידים וכרטיסיות להורים 👨‍👩‍👧‍👦</span>
-          </button>
+            <button
+              onClick={() => setActiveTab('teachers')}
+              className={`flex items-center justify-center sm:justify-start gap-1.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all text-center sm:text-right w-full sm:w-auto ${
+                activeTab === 'teachers'
+                  ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20'
+                  : 'bg-slate-800/80 text-slate-300 hover:text-white hover:bg-slate-700'
+              }`}
+            >
+              <Users className="w-4 h-4 shrink-0" />
+              <span className="truncate">עריכת מורים ({teachers.length})</span>
+            </button>
 
-          <button
-            onClick={() => setActiveTab('commitments')}
-            className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
-              activeTab === 'commitments'
-                ? 'bg-amber-400 text-slate-950 shadow-md shadow-amber-400/25'
-                : 'bg-slate-800/80 text-amber-300 hover:text-white hover:bg-slate-700 border border-amber-500/40'
-            }`}
-          >
-            <FileSignature className="w-4 h-4 text-amber-400" />
-            <span>ספריית התחייבויות הורים ✍️ ({commitments.length})</span>
-          </button>
+            <button
+              onClick={() => setActiveTab('periods')}
+              className={`flex items-center justify-center sm:justify-start gap-1.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all text-center sm:text-right w-full sm:w-auto ${
+                activeTab === 'periods'
+                  ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20'
+                  : 'bg-slate-800/80 text-slate-300 hover:text-white hover:bg-slate-700'
+              }`}
+            >
+              <Clock className="w-4 h-4 shrink-0" />
+              <span className="truncate">שעות שיעורים ({periods.length})</span>
+            </button>
 
-          <button
-            onClick={() => setActiveTab('pedagogical')}
-            className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
-              activeTab === 'pedagogical'
-                ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20'
-                : 'bg-slate-800/80 text-slate-300 hover:text-white hover:bg-slate-700'
-            }`}
-          >
-            <Sparkles className="w-4 h-4" />
-            <span>תיק תלמיד מרוכז</span>
-          </button>
+            <button
+              onClick={() => setActiveTab('reports_lists')}
+              className={`flex items-center justify-center sm:justify-start gap-1.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all text-center sm:text-right w-full sm:w-auto ${
+                activeTab === 'reports_lists'
+                  ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20'
+                  : 'bg-slate-800/80 text-slate-300 hover:text-white hover:bg-slate-700'
+              }`}
+            >
+              <FileText className="w-4 h-4 shrink-0" />
+              <span className="truncate">רשימות עמ"ט להנהלה</span>
+            </button>
 
-          <button
-            onClick={() => setActiveTab('behavior')}
-            className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
-              activeTab === 'behavior'
-                ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20'
-                : 'bg-slate-800/80 text-slate-300 hover:text-white hover:bg-slate-700'
-            }`}
-          >
-            <FileSpreadsheet className="w-4 h-4" />
-            <span>דוחות התנהגות מרוכזים</span>
-          </button>
+            <button
+              onClick={() => setActiveTab('codes')}
+              className={`flex items-center justify-center sm:justify-start gap-1.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all text-center sm:text-right w-full sm:w-auto ${
+                activeTab === 'codes'
+                  ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20'
+                  : 'bg-slate-800/80 text-slate-300 hover:text-white hover:bg-slate-700'
+              }`}
+            >
+              <KeyRound className="w-4 h-4 shrink-0" />
+              <span className="truncate">קודי צוות והרשאות</span>
+            </button>
 
-          <button
-            onClick={() => setActiveTab('database')}
-            className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
-              activeTab === 'database'
-                ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20'
-                : 'bg-slate-800/80 text-slate-300 hover:text-white hover:bg-slate-700'
-            }`}
-          >
-            <Database className="w-4 h-4" />
-            <span>מסד נתונים (ייבוא/מחיקה)</span>
-          </button>
+            <button
+              onClick={() => setActiveTab('student_codes')}
+              className={`flex items-center justify-center sm:justify-start gap-1.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all text-center sm:text-right w-full sm:w-auto ${
+                activeTab === 'student_codes'
+                  ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20'
+                  : 'bg-slate-800/80 text-cyan-300 hover:text-white hover:bg-slate-700 border border-cyan-500/30'
+              }`}
+            >
+              <UserCheck className="w-4 h-4 text-cyan-400 shrink-0" />
+              <span className="truncate">קודי תלמידים להורים 👨‍👩‍👧‍👦</span>
+            </button>
 
-          <button
-            onClick={() => setActiveTab('resets')}
-            className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
-              activeTab === 'resets'
-                ? 'bg-rose-600 text-white shadow-md shadow-rose-600/30'
-                : 'bg-rose-950/60 text-rose-300 hover:text-white hover:bg-rose-900/60 border border-rose-500/30'
-            }`}
-          >
-            <Trash2 className="w-4 h-4" />
-            <span>מרכז איפוסים ומחיקות</span>
-          </button>
+            <button
+              onClick={() => setActiveTab('commitments')}
+              className={`flex items-center justify-center sm:justify-start gap-1.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all text-center sm:text-right w-full sm:w-auto ${
+                activeTab === 'commitments'
+                  ? 'bg-amber-400 text-slate-950 shadow-md shadow-amber-400/25'
+                  : 'bg-slate-800/80 text-amber-300 hover:text-white hover:bg-slate-700 border border-amber-500/40'
+              }`}
+            >
+              <FileSignature className="w-4 h-4 text-amber-400 shrink-0" />
+              <span className="truncate">התחייבויות הורים ✍️ ({commitments.length})</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('pedagogical')}
+              className={`flex items-center justify-center sm:justify-start gap-1.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all text-center sm:text-right w-full sm:w-auto ${
+                activeTab === 'pedagogical'
+                  ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20'
+                  : 'bg-slate-800/80 text-slate-300 hover:text-white hover:bg-slate-700'
+              }`}
+            >
+              <Sparkles className="w-4 h-4 shrink-0" />
+              <span className="truncate">תיק תלמיד מרוכז</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('behavior')}
+              className={`flex items-center justify-center sm:justify-start gap-1.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all text-center sm:text-right w-full sm:w-auto ${
+                activeTab === 'behavior'
+                  ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20'
+                  : 'bg-slate-800/80 text-slate-300 hover:text-white hover:bg-slate-700'
+              }`}
+            >
+              <FileSpreadsheet className="w-4 h-4 shrink-0" />
+              <span className="truncate">דוחות התנהגות מרוכזים</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('database')}
+              className={`flex items-center justify-center sm:justify-start gap-1.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all text-center sm:text-right w-full sm:w-auto ${
+                activeTab === 'database'
+                  ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20'
+                  : 'bg-slate-800/80 text-slate-300 hover:text-white hover:bg-slate-700'
+              }`}
+            >
+              <Database className="w-4 h-4 shrink-0" />
+              <span className="truncate">מסד נתונים (ייבוא/מחיקה)</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('resets')}
+              className={`flex items-center justify-center sm:justify-start gap-1.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all text-center sm:text-right w-full sm:w-auto ${
+                activeTab === 'resets'
+                  ? 'bg-rose-600 text-white shadow-md shadow-rose-600/30'
+                  : 'bg-rose-950/60 text-rose-300 hover:text-white hover:bg-rose-900/60 border border-rose-500/30'
+              }`}
+            >
+              <Trash2 className="w-4 h-4 shrink-0" />
+              <span className="truncate">מרכז איפוסים ומחיקות</span>
+            </button>
+          </div>
         </div>
       </section>
 

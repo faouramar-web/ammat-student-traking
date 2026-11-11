@@ -233,7 +233,7 @@ export const CommitmentLibrary: React.FC = () => {
           </button>
 
           <a
-            href="/assets/aistudio/_______________________2027_ff5a0614.pdf"
+            href={`${import.meta.env.BASE_URL}assets/amat_commitment_form.pdf`}
             target="_blank"
             rel="noopener noreferrer"
             className="px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 text-xs font-bold flex items-center gap-1.5 transition-all"
@@ -533,7 +533,7 @@ export const CommitmentLibrary: React.FC = () => {
               </div>
               <div className="flex items-center gap-2">
                 <a
-                  href="/assets/amat_commitment_form.pdf"
+                  href={`${import.meta.env.BASE_URL}assets/amat_commitment_form.pdf`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 text-xs font-bold flex items-center gap-1.5 transition-all"
