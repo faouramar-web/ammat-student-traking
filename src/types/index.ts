@@ -101,8 +101,28 @@ export interface UserSession {
   activeDualMode?: 'teacher' | 'homeroom';
 }
 
+export interface ParentCommitment {
+  id: string; // unique ID
+  studentId: string;
+  studentName: string;
+  className: string;
+  homeroomTeacher: string;
+  parentName: string; // שם ההורה החותם
+  parentIdNumber: string; // מספר תעודת זהות של ההורה
+  parentPhone: string; // טלפון הורה
+  date: string; // YYYY-MM-DD
+  timestamp: string; // ISO string
+  signatureDataUrl: string; // Base64 data URL from signature canvas
+  academicYear: string; // '2026-2027 (תשפ"ז)'
+  documentTitle: string; // 'כתב התחייבות והסכמת הורים - עתודה מדעית טכנולוגית (עמ"ט STEM)'
+  agreedToTerms: boolean;
+  notes?: string;
+}
+
 export interface AdminSettings {
   adminPassword: string;
   allowHomeroomPedagogicalAccess: boolean;
   schoolPeriods: LessonPeriodConfig[];
+  parentMeetingCode?: string; // קוד כניסה קולקטיבי לפגישת הורים (ברירת מחדל: 640615)
+  commitmentCustomPdfUrl?: string; // קישור לקובץ PDF מותאם אישית אם הועלה
 }

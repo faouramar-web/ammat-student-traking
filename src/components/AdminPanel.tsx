@@ -6,6 +6,7 @@ import { exportAllToExcel } from '../utils/excel';
 import { PedagogicalFile } from './PedagogicalFile';
 import { BehaviorReportsGenerator } from './BehaviorReportsGenerator';
 import { ExcelManager } from './ExcelManager';
+import { CommitmentLibrary } from './CommitmentLibrary';
 import {
   ShieldAlert,
   Users,
@@ -35,6 +36,7 @@ import {
   Share2,
   RotateCcw,
   CheckCheck,
+  FileSignature,
 } from 'lucide-react';
 
 export const AVAILABLE_CLASSES = [
@@ -61,10 +63,12 @@ export const AdminPanel: React.FC = () => {
     clearAllReports,
     resetToDefaultData,
     regenerateAllCodes,
+    commitments,
+    clearAllCommitments,
   } = useApp();
 
   const [activeTab, setActiveTab] = useState<
-    'teachers' | 'periods' | 'reports_lists' | 'pedagogical' | 'behavior' | 'database' | 'codes' | 'student_codes' | 'resets'
+    'teachers' | 'periods' | 'reports_lists' | 'pedagogical' | 'behavior' | 'database' | 'codes' | 'student_codes' | 'commitments' | 'resets'
   >('teachers');
 
   // Student codes management states
@@ -544,6 +548,18 @@ export const AdminPanel: React.FC = () => {
           >
             <UserCheck className="w-4 h-4 text-cyan-400" />
             <span>קודי תלמידים וכרטיסיות להורים 👨‍👩‍👧‍👦</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('commitments')}
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
+              activeTab === 'commitments'
+                ? 'bg-amber-400 text-slate-950 shadow-md shadow-amber-400/25'
+                : 'bg-slate-800/80 text-amber-300 hover:text-white hover:bg-slate-700 border border-amber-500/40'
+            }`}
+          >
+            <FileSignature className="w-4 h-4 text-amber-400" />
+            <span>ספריית התחייבויות הורים ✍️ ({commitments.length})</span>
           </button>
 
           <button
@@ -2006,6 +2022,9 @@ export const AdminPanel: React.FC = () => {
           </div>
         </section>
       )}
+
+      {/* TAB 9: ספריית התחייבויות הורים חתומות */}
+      {activeTab === 'commitments' && <CommitmentLibrary />}
 
       {/* Edit Teacher Modal */}
       {editingTeacher && (

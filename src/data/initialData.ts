@@ -24,6 +24,7 @@ export const DEFAULT_ADMIN_SETTINGS: AdminSettings = {
   adminPassword: "160525", // Exact user password
   allowHomeroomPedagogicalAccess: false, // Default: strictly admin only
   schoolPeriods: DEFAULT_SCHOOL_PERIODS,
+  parentMeetingCode: "640615", // סמל המוסד של בית הספר - קוד כניסה קולקטיבי לפגישת הורים
 };
 
 export const INITIAL_HOMEROOM_TEACHERS: HomeroomTeacherInfo[] = [

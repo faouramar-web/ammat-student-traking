@@ -21,6 +21,10 @@ service cloud.firestore {
       allow read, write: if true;
     }
 
+    match /parentCommitments/{commitmentId} {
+      allow read, write: if true;
+    }
+
     // Default safety catch-all
     match /{document=**} {
       allow read, write: if false;

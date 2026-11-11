@@ -18,6 +18,7 @@ import {
   LessonPeriodConfig,
   AdminSettings,
   UserSession,
+  ParentCommitment,
 } from '../types';
 import {
   INITIAL_STUDENTS,
@@ -72,6 +73,10 @@ interface AppContextType {
   updateAdminSettings: (newSettings: Partial<AdminSettings>) => void;
   updateSchoolPeriods: (periods: LessonPeriodConfig[]) => void;
   updateHomeroomTeachers: (list: HomeroomTeacherInfo[]) => void;
+  commitments: ParentCommitment[];
+  addCommitment: (commitment: ParentCommitment) => Promise<boolean>;
+  deleteCommitment: (id: string) => Promise<void>;
+  clearAllCommitments: () => Promise<void>;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -83,6 +88,7 @@ const STORAGE_KEYS = {
   HOMEROOM_TEACHERS: 'amat_homeroom_teachers_v2',
   ADMIN_SETTINGS: 'amat_admin_settings_v2',
   SESSION: 'amat_session_v2',
+  COMMITMENTS: 'amat_parent_commitments_v2',
 };
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -152,6 +158,22 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       return [];
     }
   });
+
+  // State for signed parent commitments
+  const [commitments, setCommitments] = useState<ParentCommitment[]>(() => {
+    try {
+      const state = localStorage.getItem('amat_db_state');
+      if (state === 'empty') return [];
+      const saved = localStorage.getItem(STORAGE_KEYS.COMMITMENTS);
+      return saved !== null ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.COMMITMENTS, JSON.stringify(commitments));
+  }, [commitments]);
 
   // User session state (authentication with code)
   const [session, setSession] = useState<UserSession | null>(() => {
@@ -311,12 +333,28 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       (err) => handleFirestoreError(err, OperationType.GET, 'settings/admin')
     );
 
+    // 6. Sync parent commitments from Firestore
+    const unsubCommitments = onSnapshot(
+      collection(db, 'parentCommitments'),
+      (snapshot) => {
+        const comms: ParentCommitment[] = [];
+        snapshot.forEach((d) => comms.push(d.data() as ParentCommitment));
+        if (comms.length > 0 || localStorage.getItem('amat_db_state') !== 'empty') {
+          comms.sort((a, b) => (b.timestamp || '').localeCompare(a.timestamp || ''));
+          setCommitments(comms);
+          localStorage.setItem(STORAGE_KEYS.COMMITMENTS, JSON.stringify(comms));
+        }
+      },
+      (err) => handleFirestoreError(err, OperationType.GET, 'parentCommitments')
+    );
+
     return () => {
       unsubReports();
       unsubStudents();
       unsubTeachers();
       unsubHomerooms();
       unsubSettings();
+      unsubCommitments();
     };
   }, []);
 
@@ -690,13 +728,57 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setParentStudentId(null);
 
     // Delete all records from Firestore collections
-    ['reports', 'students', 'teachers', 'homeroomTeachers'].forEach((colName) => {
+    ['reports', 'students', 'teachers', 'homeroomTeachers', 'parentCommitments'].forEach((colName) => {
       getDocs(collection(db, colName)).then((snap) => {
         const batch = writeBatch(db);
         snap.docs.forEach((d) => batch.delete(d.ref));
         batch.commit().catch(console.warn);
       }).catch(console.warn);
     });
+    setCommitments([]);
+    localStorage.setItem(STORAGE_KEYS.COMMITMENTS, '[]');
+  };
+
+  const addCommitment = async (newCommitment: ParentCommitment): Promise<boolean> => {
+    try {
+      setCommitments((prev) => {
+        const filtered = prev.filter((c) => c.id !== newCommitment.id && c.studentId !== newCommitment.studentId);
+        const updated = [newCommitment, ...filtered];
+        localStorage.setItem(STORAGE_KEYS.COMMITMENTS, JSON.stringify(updated));
+        return updated;
+      });
+      await setDoc(doc(db, 'parentCommitments', newCommitment.id), newCommitment);
+      return true;
+    } catch (err) {
+      handleFirestoreError(err, OperationType.WRITE, `parentCommitments/${newCommitment.id}`);
+      return false;
+    }
+  };
+
+  const deleteCommitment = async (id: string): Promise<void> => {
+    try {
+      setCommitments((prev) => {
+        const updated = prev.filter((c) => c.id !== id);
+        localStorage.setItem(STORAGE_KEYS.COMMITMENTS, JSON.stringify(updated));
+        return updated;
+      });
+      await deleteDoc(doc(db, 'parentCommitments', id));
+    } catch (err) {
+      handleFirestoreError(err, OperationType.DELETE, `parentCommitments/${id}`);
+    }
+  };
+
+  const clearAllCommitments = async (): Promise<void> => {
+    try {
+      setCommitments([]);
+      localStorage.setItem(STORAGE_KEYS.COMMITMENTS, '[]');
+      const snap = await getDocs(collection(db, 'parentCommitments'));
+      const batch = writeBatch(db);
+      snap.docs.forEach((d) => batch.delete(d.ref));
+      await batch.commit();
+    } catch (err) {
+      console.warn('Error clearing commitments:', err);
+    }
   };
 
   const regenerateAllCodes = () => {
@@ -789,6 +871,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         updateAdminSettings,
         updateSchoolPeriods,
         updateHomeroomTeachers,
+        commitments,
+        addCommitment,
+        deleteCommitment,
+        clearAllCommitments,
       }}
     >
       {children}

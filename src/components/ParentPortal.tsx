@@ -22,15 +22,19 @@ import {
   Check,
   ArrowRight,
   HelpCircle,
+  FileSignature,
+  CheckCircle2,
 } from 'lucide-react';
+import { ParentCommitmentSigner } from './ParentCommitmentSigner';
 
 export const ParentPortal: React.FC = () => {
-  const { students, reports, parentStudentId, setParentStudentId } = useApp();
+  const { students, reports, parentStudentId, setParentStudentId, commitments, adminSettings } = useApp();
 
   // Code input state
   const [codeInput, setCodeInput] = useState<string>('');
   const [errorMsg, setErrorMsg] = useState<string>('');
   const [pendingStudent, setPendingStudent] = useState<Student | null>(null);
+  const [isSignerModalOpen, setIsSignerModalOpen] = useState<boolean>(false);
 
   // Check URL parameter (?code=... or ?studentId=...) or existing session
   useEffect(() => {
@@ -111,6 +115,15 @@ export const ParentPortal: React.FC = () => {
       return;
     }
 
+    // Match collective meeting code (e.g. 640615 or custom)
+    const collectiveMeetingCode = (adminSettings?.parentMeetingCode || '640615').trim();
+    if (cleanCode === collectiveMeetingCode || cleanCode === '640615') {
+      setIsSignerModalOpen(true);
+      setCodeInput('');
+      setErrorMsg('');
+      return;
+    }
+
     // Match student by personal secret parentCode (or ID)
     const matched = students.find(
       (s) =>
@@ -147,10 +160,62 @@ export const ParentPortal: React.FC = () => {
     setErrorMsg('');
   };
 
+  // If Signer is open in unauthenticated or meeting mode
+  if (isSignerModalOpen) {
+    return (
+      <div className="py-2">
+        <ParentCommitmentSigner
+          initialStudent={currentStudent || pendingStudent || null}
+          onClose={() => setIsSignerModalOpen(false)}
+        />
+      </div>
+    );
+  }
+
   // SCREEN 1 & 2: Not authenticated - Code Entry or Child Confirmation Preview
   if (!currentStudent) {
     return (
       <div className="max-w-xl mx-auto py-6 px-4">
+        {/* PROMINENT PARENT MEETING COMMITMENT CARD */}
+        <div className="mb-6 p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-amber-500/15 via-orange-500/10 to-cyan-500/15 border-2 border-dashed border-amber-400 text-right shadow-sm">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <span className="p-3 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-md shrink-0">
+                <FileSignature className="w-6 h-6" />
+              </span>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-black text-amber-950 font-['Rubik']">
+                    מפגש הורי עמ"ט תשפ"ז
+                  </span>
+                  <span className="text-[10px] bg-amber-200/80 text-amber-900 px-2.5 py-0.5 rounded-full font-bold">
+                    חתימה דיגיטלית חובה
+                  </span>
+                </div>
+                <h4 className="text-sm sm:text-base font-black text-slate-900 mt-0.5">
+                  כתב התחייבות והסכמת הורים לתכנית עמ"ט
+                </h4>
+                <p className="text-xs text-slate-600 mt-0.5 leading-relaxed">
+                  קריאת המסמך וחתימה מהירה באצבע או בעכבר. (קוד מפגש כיתתי:{' '}
+                  <span className="font-mono font-bold text-amber-900 bg-amber-100 px-1.5 py-0.5 rounded">
+                    {adminSettings?.parentMeetingCode || '640615'}
+                  </span>
+                  )
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setIsSignerModalOpen(true)}
+              className="w-full sm:w-auto px-5 py-3 rounded-2xl bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white font-black text-xs sm:text-sm shadow-md shadow-amber-600/30 flex items-center justify-center gap-2 transition-all cursor-pointer whitespace-nowrap transform hover:-translate-y-0.5"
+            >
+              <FileSignature className="w-4 h-4" />
+              <span>חתימה על כתב התחייבות ✍️</span>
+            </button>
+          </div>
+        </div>
+
         <div className="bg-white rounded-3xl shadow-xl border border-slate-200/90 p-6 sm:p-8 text-center relative overflow-hidden">
           {/* Top security icon */}
           <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-cyan-600 via-blue-600 to-indigo-700 text-white flex items-center justify-center mx-auto shadow-lg shadow-cyan-600/30 mb-4 ring-4 ring-cyan-100">
@@ -365,6 +430,90 @@ export const ParentPortal: React.FC = () => {
           </button>
         </div>
       </section>
+
+      {/* Commitment Status Card for Student */}
+      {(() => {
+        const studentCommitment = commitments.find((c) => c.studentId === currentStudent.id);
+        if (studentCommitment) {
+          return (
+            <div className="p-4 sm:p-5 rounded-2xl bg-emerald-50 border-2 border-emerald-300 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm text-right">
+              <div className="flex items-center gap-3.5">
+                <div className="w-11 h-11 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shadow-sm shrink-0">
+                  <CheckCircle2 className="w-6 h-6" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-black text-emerald-900">
+                      כתב התחייבות הורים - חתום ומאומת
+                    </span>
+                    <span className="text-[10px] bg-emerald-200 text-emerald-900 px-2 py-0.5 rounded-full font-bold">
+                      תשפ"ז
+                    </span>
+                  </div>
+                  <h4 className="text-sm font-black text-slate-900 mt-0.5">
+                    נחתם דיגיטלית ע"י {studentCommitment.parentName} (ת.ז {studentCommitment.parentIdNumber})
+                  </h4>
+                  <p className="text-xs text-slate-600 mt-0.5">
+                    תאריך חתימה: {new Date(studentCommitment.timestamp).toLocaleDateString('he-IL')} • טלפון ליצירת קשר: {studentCommitment.parentPhone}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 self-stretch sm:self-auto justify-end">
+                <div className="bg-white p-1 rounded-xl border border-emerald-300 shadow-inner hidden md:block">
+                  <img
+                    src={studentCommitment.signatureDataUrl}
+                    alt="חתימה"
+                    className="h-9 max-w-[110px] object-contain"
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsSignerModalOpen(true)}
+                  className="px-4 py-2 rounded-xl bg-white hover:bg-emerald-100 text-emerald-800 text-xs font-bold border border-emerald-300 transition-colors shadow-sm cursor-pointer whitespace-nowrap"
+                >
+                  צפה / עדכן חתימה
+                </button>
+              </div>
+            </div>
+          );
+        }
+
+        return (
+          <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-amber-500/15 via-orange-500/10 to-amber-50 border-2 border-amber-400 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm text-right">
+            <div className="flex items-center gap-3.5">
+              <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 text-white flex items-center justify-center shadow-sm shrink-0">
+                <FileSignature className="w-6 h-6" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-black text-amber-950">
+                    תשומת לב ההורים: טרם נחתם כתב התחייבות
+                  </span>
+                  <span className="text-[10px] bg-amber-200 text-amber-900 px-2 py-0.5 rounded-full font-bold">
+                    דרושה חתימה
+                  </span>
+                </div>
+                <h4 className="text-sm font-black text-slate-900 mt-0.5">
+                  כתב התחייבות והסכמת הורים להשתתפות במסלול עמ"ט לשנה"ל {SCHOOL_INFO.academicYear}
+                </h4>
+                <p className="text-xs text-slate-600 mt-0.5">
+                  הנכם מתבקשים לקרוא את עיקרי התכנית ולחתום דיגיטלית באמצעות האצבע או העכבר.
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setIsSignerModalOpen(true)}
+              className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white font-black text-xs shadow-md shadow-amber-600/30 flex items-center justify-center gap-2 transition-all cursor-pointer whitespace-nowrap animate-pulse"
+            >
+              <FileSignature className="w-4 h-4" />
+              <span>חתימה על כתב ההתחייבות ✍️</span>
+            </button>
+          </div>
+        );
+      })()}
 
       {/* Metrics Row */}
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -610,6 +759,18 @@ export const ParentPortal: React.FC = () => {
       <div className="text-center py-2 text-xs text-slate-400">
         🔒 דף זה מוצג באופן מאובטח להורי התלמיד/ה {currentStudent.name} בלבד | מערכת עמ"ט Live
       </div>
+
+      {/* Signing modal while inside student file */}
+      {isSignerModalOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+          <div className="relative w-full max-w-4xl my-8">
+            <ParentCommitmentSigner
+              initialStudent={currentStudent}
+              onClose={() => setIsSignerModalOpen(false)}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
