@@ -119,9 +119,11 @@ export const CommitmentLibrary: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 font-['Rubik'] text-right">
-      {/* HEADER BANNER */}
-      <section className="bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 rounded-3xl p-6 text-white shadow-xl relative overflow-hidden">
+    <div className="space-y-6 font-['Rubik'] text-right print:space-y-0 print:m-0 print:p-0">
+      {/* DASHBOARD VIEWS (HIDDEN IN PRINT) */}
+      <div className="print:hidden space-y-6">
+        {/* HEADER BANNER */}
+        <section className="bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 rounded-3xl p-6 text-white shadow-xl relative overflow-hidden">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 rounded-2xl bg-white/20 text-white flex items-center justify-center font-bold text-2xl shadow-inner border border-white/20">
@@ -518,11 +520,12 @@ export const CommitmentLibrary: React.FC = () => {
           )}
         </section>
       )}
+      </div>
 
       {/* FULL LEGAL ARABIC DOCUMENT VIEW / PRINT MODAL (Matching User's Uploaded PDF) */}
       {viewingCommitment && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
-          <div className="bg-white rounded-3xl max-w-3xl w-full shadow-2xl border border-slate-200 overflow-hidden my-6 animate-in zoom-in-95 duration-200 max-h-[92vh] flex flex-col">
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 overflow-y-auto print:static print:inset-auto print:bg-white print:p-0 print:m-0 print:overflow-visible print:block print:w-full print:max-w-none">
+          <div className="bg-white rounded-3xl max-w-3xl w-full shadow-2xl border border-slate-200 overflow-hidden my-6 animate-in zoom-in-95 duration-200 max-h-[92vh] flex flex-col print:static print:max-h-none print:h-auto print:overflow-visible print:border-none print:shadow-none print:rounded-none print:m-0 print:p-0 print:w-full print:max-w-none print:block">
             {/* Modal actions bar (hidden in print) */}
             <div className="p-4 bg-slate-900 text-white flex items-center justify-between print:hidden shrink-0">
               <div className="flex items-center gap-2">
@@ -560,43 +563,43 @@ export const CommitmentLibrary: React.FC = () => {
             </div>
 
             {/* Official Printable Legal Document Layout (Arabic verbatim from PDF) */}
-            <div className="p-6 sm:p-10 space-y-6 text-slate-900 overflow-y-auto print:overflow-visible print:p-0 text-right font-['Rubik']">
+            <div className="p-6 sm:p-8 space-y-5 print:space-y-2 text-slate-900 overflow-y-auto print:overflow-visible print:p-0 print:m-0 print:max-h-none text-right font-['Rubik'] printable-commitment-form">
               {/* Header */}
-              <div className="text-center border-b-2 border-slate-900 pb-4">
-                <h2 className="text-xl sm:text-2xl font-black text-slate-900">
+              <div className="text-center border-b-2 border-slate-900 pb-3 print:pb-1.5">
+                <h2 className="text-xl sm:text-2xl print:text-base font-black text-slate-900">
                   استمارة تعهّد والتزام الطالب ووليّ الأمر
                 </h2>
-                <div className="text-sm font-bold text-cyan-900 mt-1">
+                <div className="text-sm print:text-xs font-bold text-cyan-900 mt-0.5">
                   برنامج الاحتياط العلمي التكنولوجي (עמ״ט)
                 </div>
-                <div className="text-xs text-slate-600 mt-0.5">
+                <div className="text-xs print:text-[9.5px] text-slate-600 mt-0.5">
                   {SCHOOL_INFO.nameArabic} • {SCHOOL_INFO.name} (رمز المؤسسة: {SCHOOL_INFO.institutionSymbol})
                 </div>
               </div>
 
               {/* Header Info Table (Matching Page 1 of PDF) */}
-              <div className="border-2 border-slate-900 rounded-xl overflow-hidden text-xs">
-                <div className="grid grid-cols-2 divide-x divide-x-reverse divide-slate-900 border-b border-slate-900 bg-slate-50 p-2.5">
+              <div className="border-2 border-slate-900 rounded-xl overflow-hidden text-xs print:text-[10px]">
+                <div className="grid grid-cols-2 divide-x divide-x-reverse divide-slate-900 border-b border-slate-900 bg-slate-50 print:bg-slate-100 p-2 print:p-1.5">
                   <div>
-                    <span className="text-slate-500 font-bold block">اسم المدرسة:</span>
+                    <span className="text-slate-500 font-bold block print:text-[9px]">اسم المدرسة:</span>
                     <strong className="text-slate-900">{SCHOOL_INFO.nameArabic}</strong>
                   </div>
                   <div>
-                    <span className="text-slate-500 font-bold block">الصف:</span>
+                    <span className="text-slate-500 font-bold block print:text-[9px]">الصف:</span>
                     <strong className="text-slate-900">الصف {viewingCommitment.className}</strong>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 divide-x divide-x-reverse divide-slate-900 p-2.5">
+                <div className="grid grid-cols-2 divide-x divide-x-reverse divide-slate-900 p-2 print:p-1.5">
                   <div>
-                    <span className="text-slate-500 font-bold block">اسم الطالب/ة:</span>
-                    <strong className="text-base font-black text-slate-950">{viewingCommitment.studentName}</strong>
+                    <span className="text-slate-500 font-bold block print:text-[9px]">اسم الطالب/ة:</span>
+                    <strong className="text-base print:text-xs font-black text-slate-950">{viewingCommitment.studentName}</strong>
                   </div>
                   <div>
-                    <span className="text-slate-500 font-bold block">اسم وليّ الأمر:</span>
-                    <strong className="text-base font-black text-slate-950">
+                    <span className="text-slate-500 font-bold block print:text-[9px]">اسم وليّ الأمر:</span>
+                    <strong className="text-base print:text-xs font-black text-slate-950">
                       {viewingCommitment.parentName}
-                      <span className="text-xs font-normal text-slate-600 mr-2">
+                      <span className="text-xs print:text-[9px] font-normal text-slate-600 mr-2">
                         (هوية: {viewingCommitment.parentIdNumber} | هاتف: {viewingCommitment.parentPhone})
                       </span>
                     </strong>
@@ -673,64 +676,64 @@ export const CommitmentLibrary: React.FC = () => {
               </div>
 
               {/* Section 6 & Signatures Box (Matching Page 3 of PDF) */}
-              <div className="pt-4 border-t-2 border-slate-900 space-y-4">
-                <div className="text-xs">
-                  <h4 className="font-black text-sm text-slate-950 mb-1">
+              <div className="pt-3 print:pt-2 border-t-2 border-slate-900 space-y-3 print:space-y-1.5 print-avoid-break">
+                <div className="text-xs print:text-[9.5px]">
+                  <h4 className="font-black text-sm print:text-xs text-slate-950 mb-0.5">
                     سادساً: الإقرار والموافقة النهائية
                   </h4>
-                  <p className="text-slate-700">
+                  <p className="text-slate-700 leading-tight">
                     نقرّ بأننا قرأنا جميع البنود المذكورة أعلاه، وفهمنا طبيعة البرنامج ومتطلباته التعليمية والسلوكية، ونلتزم ببذل كل جهد ممكن من أجل الاستمرار والنجاح وتحقيق أهداف البرنامج.
                   </p>
                 </div>
 
                 {/* Signatures Table matching PDF */}
-                <div className="grid grid-cols-2 gap-4 border-2 border-slate-900 rounded-xl p-4 bg-slate-50/50">
+                <div className="grid grid-cols-2 gap-3 border-2 border-slate-900 rounded-xl p-3 print:p-2 bg-slate-50/50 print:bg-white print-avoid-break">
                   {/* Left Box: Parent Original Handwritten Signature */}
-                  <div className="space-y-2 text-xs">
+                  <div className="space-y-1 text-xs print:text-[9.5px]">
                     <div>
-                      <span className="font-bold text-slate-700 block">توقيع وليّ الأمر:</span>
-                      <strong className="text-slate-900 text-sm">{viewingCommitment.parentName}</strong>
+                      <span className="font-bold text-slate-700 block text-[10px] print:text-[9px]">توقيع وليّ الأمر:</span>
+                      <strong className="text-slate-900 text-xs sm:text-sm">{viewingCommitment.parentName}</strong>
                     </div>
 
-                    <div className="bg-white border-2 border-slate-400 rounded-xl p-2.5 inline-block shadow-sm">
-                      <span className="text-[10px] text-slate-400 block mb-1">التوقيع الرقمي الأصلي المعتمد:</span>
+                    <div className="bg-white border-2 border-slate-400 rounded-xl p-2 print:p-1 inline-block shadow-sm">
+                      <span className="text-[9px] print:text-[8px] text-slate-400 block mb-0.5">التوقيع الرقمي الأصلي المعتمد:</span>
                       <img
                         src={viewingCommitment.signatureDataUrl}
                         alt="توقيع ولي الأمر"
-                        className="h-20 max-w-[240px] object-contain"
+                        className="h-16 print:h-12 max-w-[220px] object-contain"
                       />
                     </div>
 
-                    <div className="text-[11px] text-slate-600">
+                    <div className="text-[10px] print:text-[8.5px] text-slate-600">
                       رقم الهوية: <strong className="font-mono text-slate-900">{viewingCommitment.parentIdNumber}</strong>
-                      <br />
+                      {' • '}
                       رقم الهاتف: <strong className="font-mono text-slate-900">{viewingCommitment.parentPhone}</strong>
                     </div>
                   </div>
 
                   {/* Right Box: School & Coordinator Confirmation */}
-                  <div className="flex flex-col justify-between text-xs space-y-3">
+                  <div className="flex flex-col justify-between text-xs print:text-[9.5px] space-y-1.5 print:space-y-1">
                     <div>
-                      <span className="font-bold text-slate-700 block">توقيع الطالب/ة:</span>
-                      <div className="border-b border-slate-400 pt-3 pb-1 text-slate-800 font-medium">
+                      <span className="font-bold text-slate-700 block text-[10px] print:text-[9px]">توقيع الطالب/ة:</span>
+                      <div className="border-b border-slate-400 pt-1 pb-0.5 text-slate-800 font-medium">
                         {viewingCommitment.studentName}
                       </div>
                     </div>
 
                     <div>
-                      <span className="font-bold text-slate-700 block">إدارة المدرسة ومنسّق البرنامج:</span>
-                      <div className="p-2 border border-dashed border-slate-400 rounded-lg text-center mt-1">
-                        <div className="font-bold text-slate-900">{SCHOOL_INFO.nameArabic}</div>
-                        <div className="text-[10px] text-slate-500">
+                      <span className="font-bold text-slate-700 block text-[10px] print:text-[9px]">إدارة المدرسة ومنסّق البرنامج:</span>
+                      <div className="p-1.5 print:p-1 border border-dashed border-slate-400 rounded-lg text-center mt-0.5">
+                        <div className="font-bold text-slate-900 text-xs print:text-[10px]">{SCHOOL_INFO.nameArabic}</div>
+                        <div className="text-[9px] print:text-[8px] text-slate-500">
                           {SCHOOL_INFO.name} (رمز مؤسسة: {SCHOOL_INFO.institutionSymbol})
                         </div>
-                        <div className="text-[10px] text-emerald-800 font-bold mt-1">
+                        <div className="text-[9px] print:text-[8px] text-emerald-800 font-bold mt-0.5">
                           ✓ معتمد وموثق في السجل السحابي
                         </div>
                       </div>
                     </div>
 
-                    <div className="pt-2 border-t border-slate-300 flex justify-between text-xs">
+                    <div className="pt-1 border-t border-slate-300 flex justify-between text-[10px] print:text-[9px]">
                       <span className="font-bold text-slate-700">التاريخ:</span>
                       <strong className="font-mono text-slate-900">
                         {viewingCommitment.date || new Date(viewingCommitment.timestamp).toISOString().split('T')[0]}
@@ -746,9 +749,9 @@ export const CommitmentLibrary: React.FC = () => {
 
       {/* BATCH PRINT MODAL */}
       {isBatchPrintOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 space-y-6 text-right font-['Rubik']">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-200">
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto print:static print:inset-auto print:bg-white print:p-0 print:m-0 print:overflow-visible print:block print:w-full print:max-w-none">
+          <div className="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 space-y-6 text-right font-['Rubik'] print:static print:max-h-none print:h-auto print:overflow-visible print:border-none print:shadow-none print:rounded-none print:m-0 print:p-0 print:w-full print:max-w-none print:block">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-200 print:hidden">
               <div>
                 <h3 className="text-xl font-black text-slate-900">
                   طباعة مجمّعة لاستمارات التعهّد ({filteredCommitments.length} استمارة)

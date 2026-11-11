@@ -23,15 +23,19 @@ const AppContent: React.FC = () => {
   }, [session, currentRole, setCurrentRole]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-100/70 text-slate-800 font-['Assistant',sans-serif]">
-      {/* Top Header & Navigation */}
-      <Header />
+    <div className="min-h-screen flex flex-col bg-slate-100/70 text-slate-800 font-['Assistant',sans-serif] print:bg-white print:min-h-0">
+      {/* Top Header & Navigation (hidden in print) */}
+      <div className="print:hidden">
+        <Header />
+      </div>
 
-      {/* Real-time floating alert for urgent broadcasts (staff only) */}
-      <RealTimeAlertBanner />
+      {/* Real-time floating alert for urgent broadcasts (staff only - hidden in print) */}
+      <div className="print:hidden">
+        <RealTimeAlertBanner />
+      </div>
 
       {/* Main View Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 print:p-0 print:m-0 print:max-w-none print:w-full">
         {session && currentRole === 'admin' && <AdminPanel />}
         {session && currentRole === 'teacher' && <TeacherJournal />}
         {session && currentRole === 'homeroom' && <HomeroomDashboard />}

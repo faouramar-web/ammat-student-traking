@@ -301,7 +301,7 @@ export const ParentCommitmentSigner: React.FC<ParentCommitmentSignerProps> = ({
             </div>
           </div>
 
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-3 print:hidden">
             <button
               onClick={() => window.print()}
               className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-bold text-sm shadow flex items-center gap-2 transition-all cursor-pointer"
