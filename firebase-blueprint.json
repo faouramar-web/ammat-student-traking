@@ -1,0 +1,120 @@
+{
+  "entities": {
+    "Student": {
+      "title": "Student",
+      "description": "AMAT student entity",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "grade": { "type": "string", "enum": ["ז", "ח", "ט"] },
+        "className": { "type": "string" },
+        "homeroomTeacher": { "type": "string" },
+        "notes": { "type": "string" }
+      },
+      "required": ["id", "name", "grade", "className", "homeroomTeacher"]
+    },
+    "Teacher": {
+      "title": "Teacher",
+      "description": "AMAT teacher entity",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "subjects": { "type": "array" },
+        "grades": { "type": "array" },
+        "roleDescription": { "type": "string" },
+        "teacherCode": { "type": "string" },
+        "isHomeroom": { "type": "boolean" },
+        "homeroomClass": { "type": "string" },
+        "homeroomCode": { "type": "string" }
+      },
+      "required": ["id", "name", "subjects", "grades", "roleDescription", "teacherCode"]
+    },
+    "HomeroomTeacherInfo": {
+      "title": "HomeroomTeacherInfo",
+      "description": "Homeroom educator entity",
+      "type": "object",
+      "properties": {
+        "className": { "type": "string" },
+        "teacherName": { "type": "string" },
+        "code": { "type": "string" }
+      },
+      "required": ["className", "teacherName", "code"]
+    },
+    "IncidentReport": {
+      "title": "IncidentReport",
+      "description": "Live lesson report entity",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "timestamp": { "type": "string" },
+        "date": { "type": "string" },
+        "lessonPeriod": { "type": "number" },
+        "teacherId": { "type": "string" },
+        "teacherName": { "type": "string" },
+        "subject": { "type": "string" },
+        "studentId": { "type": "string" },
+        "studentName": { "type": "string" },
+        "grade": { "type": "string" },
+        "className": { "type": "string" },
+        "homeroomTeacher": { "type": "string" },
+        "attendance": { "type": "string" },
+        "homework": { "type": "string" },
+        "behavior": { "type": "string" },
+        "description": { "type": "string" },
+        "addressedByHomeroom": { "type": "boolean" },
+        "addressedAt": { "type": "string" }
+      },
+      "required": [
+        "id",
+        "timestamp",
+        "date",
+        "lessonPeriod",
+        "teacherId",
+        "teacherName",
+        "subject",
+        "studentId",
+        "studentName",
+        "grade",
+        "className",
+        "attendance",
+        "homework",
+        "behavior"
+      ]
+    },
+    "AdminSettings": {
+      "title": "AdminSettings",
+      "description": "Application administration and bell schedule",
+      "type": "object",
+      "properties": {
+        "adminPassword": { "type": "string" },
+        "allowHomeroomPedagogicalAccess": { "type": "boolean" },
+        "schoolPeriods": { "type": "array" }
+      },
+      "required": ["adminPassword", "allowHomeroomPedagogicalAccess", "schoolPeriods"]
+    }
+  },
+  "firestore": {
+    "/students/{studentId}": {
+      "schema": "Student",
+      "description": "Collection of all students in the AMAT track"
+    },
+    "/teachers/{teacherId}": {
+      "schema": "Teacher",
+      "description": "Collection of AMAT subject teachers"
+    },
+    "/homeroomTeachers/{classId}": {
+      "schema": "HomeroomTeacherInfo",
+      "description": "Collection of homeroom teachers mapped by class"
+    },
+    "/reports/{reportId}": {
+      "schema": "IncidentReport",
+      "description": "Live attendance, homework, and behavior incident reports"
+    },
+    "/settings/{settingId}": {
+      "schema": "AdminSettings",
+      "description": "System-wide admin configuration and school schedules"
+    }
+  }
+}

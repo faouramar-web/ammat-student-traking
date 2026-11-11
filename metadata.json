@@ -1,0 +1,10 @@
+{
+  "name": "עמ\"ט Live - עתודה מדעית טכנולוגית",
+  "description": "אפליקציה מתקדמת לניהול דיווחים, נוכחות והתנהגות בזמן אמת עבור מורי עמ\"ט, מחנכות והורים",
+  "requestFramePermissions": [
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
